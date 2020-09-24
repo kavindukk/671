@@ -15,11 +15,14 @@ for i in range(5):
             polynomials[i,j] = step[j]**3 - 3*step[j]/5
         if i==4:
             polynomials[i,j] = step[j]**4 + (step[j]**2)/2 -(11/30)
-
+plt.figure('Legrande Polynomials by using Gram-Schmidt')
 plt.plot(step, polynomials[0,:], label='first')
 plt.plot(step, polynomials[1,:], label='second')
 plt.plot(step, polynomials[2,:], label='third')
 plt.plot(step, polynomials[3,:], label='fourth')
 plt.plot(step, polynomials[4,:], label='fifth')
+plt.xlabel('x value')
+plt.ylabel('y value')
+plt.legend()
 plt.show()
 
