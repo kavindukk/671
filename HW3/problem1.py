@@ -72,3 +72,73 @@ for i in approxError:
 normE = np.sqrt(normE)
 print(normE)
 
+
+# Part c
+# Chebyshev Polynomials
+ChebyShevPolys = np.zeros((5,10000), dtype=np.float64)
+for i in range(5):
+    for j in range(10000):
+        if i==0:
+            ChebyShevPolys[i,j] = 1
+        if i==1:
+            ChebyShevPolys[i,j] = step[j]
+        if i==2:
+            ChebyShevPolys[i,j] = 2*step[j]**2 - 1
+        if i==3:
+            ChebyShevPolys[i,j] = 4*step[j]**3 - 3*step[j]
+        if i==4:
+            ChebyShevPolys[i,j] = 8*step[j]**4 - 8*(step[j]**2) + 1
+
+plt.figure('ChebyShev Polynomials')
+plt.plot(step, ChebyShevPolys[0,:], label='first')
+plt.plot(step, ChebyShevPolys[1,:], label='second')
+plt.plot(step, ChebyShevPolys[2,:], label='third')
+plt.plot(step, ChebyShevPolys[3,:], label='fourth')
+plt.plot(step, ChebyShevPolys[4,:], label='fifth')
+plt.xlabel('x value')
+plt.ylabel('y value')
+plt.legend()
+plt.show()
+
+# Part D
+# Calculating coefficients for Chebyshev Polynomials
+def ChSvY0(x):
+    return 1
+def ChSvY1(x):
+    return x
+def ChSvY2(x):
+    return 2*(x**2) - 1
+def ChSvY3(x):
+    return 4*(x**3) - 3*x
+def ChSvY4(x):
+    return 8*(x**4) - 8*(x**2) + 1
+
+ChSvc0 = quad(lambda x: ChSvY0(x)*f_n(x), -1, 1)[0]/quad(lambda x: ChSvY0(x)*ChSvY0(x), -1, 1)[0]
+ChSvc1 = quad(lambda x: ChSvY1(x)*f_n(x), -1, 1)[0]/quad(lambda x: ChSvY1(x)*ChSvY1(x), -1, 1)[0]
+ChSvc2 = quad(lambda x: ChSvY2(x)*f_n(x), -1, 1)[0]/quad(lambda x: ChSvY2(x)*ChSvY2(x), -1, 1)[0]
+ChSvc3 = quad(lambda x: ChSvY3(x)*f_n(x), -1, 1)[0]/quad(lambda x: ChSvY3(x)*ChSvY3(x), -1, 1)[0]
+ChSvc4 = quad(lambda x: ChSvY4(x)*f_n(x), -1, 1)[0]/quad(lambda x: ChSvY4(x)*ChSvY4(x), -1, 1)[0]
+coeffChebyShev = [ChSvc0, ChSvc1, ChSvc2, ChSvc3, ChSvc4]
+
+plt.figure('f(t)=np.exp(-t) approximation using Chebyshev equations')
+plt.plot(step, eToThePowMinusT, label='f(t)=e**(-t)')
+plt.plot(step, ChebyShevPolys[0,:]*ChSvc0, label='first approximation')
+plt.plot(step, ChebyShevPolys[1,:]*ChSvc1, label='second approximation')
+plt.plot(step, ChebyShevPolys[2,:]*ChSvc2, label='third approximation')
+plt.plot(step, ChebyShevPolys[3,:]*ChSvc3, label='fourth approximation')
+plt.plot(step, ChebyShevPolys[4,:]*ChSvc4, label='fifth approximation')
+plt.xlabel('x value')
+plt.ylabel('y value')
+plt.legend()
+plt.show()
+
+# Calculate the error norm Chebyshev method
+ChSVApproxError = [(f_n(x)-ChSvc0*ChSvY0(x)-ChSvc1*ChSvY1(x)-ChSvc2*ChSvY2(x)-ChSvc3*ChSvY3(x)-ChSvc4*ChSvY4(x)) for x in step]
+normE=0
+for i in ChSVApproxError:
+    normE += i**2
+normE = np.sqrt(normE)
+print(normE)
+
+# Part E
+# Error norm of ChebyShev equations seems to be low compared to Legrande Polynomials
