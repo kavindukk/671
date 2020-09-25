@@ -1,5 +1,6 @@
 from scipy.io import loadmat
 import numpy as np
+import cv2
 
 data = loadmat('prob2.mat')
 
@@ -27,6 +28,11 @@ for i in range(20):
         grammianMatrix[i,j] = imageVectorMatrix[i,:] @ imageVectorMatrix[j,:]
 
 coeffs = np.linalg.inv(grammianMatrix) @ innerProductofXwithP
+q = xVector
+for i in range(20):
+    q = q - coeffs[i,0]*imageVectorMatrix[i,:]
 
-
-print(coeffs)
+q = q.reshape(256,256) # reconstructed picture
+img = np.array(q*255).astype('uint8')
+cv2.imshow("image", img)
+cv2.waitKey()
