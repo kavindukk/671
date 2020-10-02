@@ -14,19 +14,21 @@ for i in range(5):
         if i==2:
             polynomials[i,j] = step[j]**2 - (1/3)
         if i==3:
-            polynomials[i,j] = step[j]**3 - 3*step[j]/5
+            polynomials[i,j] = step[j]**3 - 3*step[j]/5 
         if i==4:
             polynomials[i,j] = step[j]**4 - (6/7)*(step[j]**2) +(2/15)
 plt.figure('Legrande Polynomials by using Gram-Schmidt')
+# plt.subplot(4,1,1)
 plt.plot(step, polynomials[0,:], label='first')
 plt.plot(step, polynomials[1,:], label='second')
 plt.plot(step, polynomials[2,:], label='third')
 plt.plot(step, polynomials[3,:], label='fourth')
 plt.plot(step, polynomials[4,:], label='fifth')
+# plt.title('Legrande Polynomials by using Gram-Schmidt')
 plt.xlabel('x value')
 plt.ylabel('y value')
 plt.legend()
-plt.show()
+# plt.show()
 
 # part B
 # Calculating coefficients
@@ -53,16 +55,18 @@ check = [c0, c1, c2, c3, c4]
 # Plot f(t) and the approximation
 eToThePowMinusT = [np.exp(-x) for x in step]
 plt.figure('f(t)=np.exp(-t) approximation')
+# plt.subplot(4,1,2)
 plt.plot(step, eToThePowMinusT, label='f(t)=e**(-t)')
 plt.plot(step, polynomials[0,:]*c0, label='first approximation')
 plt.plot(step, polynomials[1,:]*c1, label='second approximation')
 plt.plot(step, polynomials[2,:]*c2, label='third approximation')
 plt.plot(step, polynomials[3,:]*c3, label='fourth approximation')
 plt.plot(step, polynomials[4,:]*c4, label='fifth approximation')
+# plt.title('f(t)=np.exp(-t) approximation')
 plt.xlabel('x value')
 plt.ylabel('y value')
 plt.legend()
-plt.show()
+# plt.show()
 
 # Calculate the error norm
 approxError = [(f_n(x)-c0*y_0(x)-c1*y_1(x)-c2*y_2(x)-c3*y_3(x)-c4*y_4(x)) for x in step]
@@ -90,15 +94,17 @@ for i in range(5):
             ChebyShevPolys[i,j] = 8*step[j]**4 - 8*(step[j]**2) + 1
 
 plt.figure('ChebyShev Polynomials')
+# plt.subplot(4,1,3)
 plt.plot(step, ChebyShevPolys[0,:], label='first')
 plt.plot(step, ChebyShevPolys[1,:], label='second')
 plt.plot(step, ChebyShevPolys[2,:], label='third')
 plt.plot(step, ChebyShevPolys[3,:], label='fourth')
 plt.plot(step, ChebyShevPolys[4,:], label='fifth')
+# plt.title('ChebyShev Polynomials')
 plt.xlabel('x value')
 plt.ylabel('y value')
 plt.legend()
-plt.show()
+# plt.show()
 
 # Part D
 # Calculating coefficients for Chebyshev Polynomials
@@ -121,6 +127,7 @@ ChSvc4 = quad(lambda x: ChSvY4(x)*f_n(x), -1, 1)[0]/quad(lambda x: ChSvY4(x)*ChS
 coeffChebyShev = [ChSvc0, ChSvc1, ChSvc2, ChSvc3, ChSvc4]
 
 plt.figure('f(t)=np.exp(-t) approximation using Chebyshev equations')
+# plt.subplot(4,1,4)
 plt.plot(step, eToThePowMinusT, label='f(t)=e**(-t)')
 plt.plot(step, ChebyShevPolys[0,:]*ChSvc0, label='first approximation')
 plt.plot(step, ChebyShevPolys[1,:]*ChSvc1, label='second approximation')
@@ -129,7 +136,9 @@ plt.plot(step, ChebyShevPolys[3,:]*ChSvc3, label='fourth approximation')
 plt.plot(step, ChebyShevPolys[4,:]*ChSvc4, label='fifth approximation')
 plt.xlabel('x value')
 plt.ylabel('y value')
+# plt.title('f(t)=np.exp(-t) approximation using Chebyshev equations')
 plt.legend()
+# plt.tight_layout()
 plt.show()
 
 # Calculate the error norm Chebyshev method
