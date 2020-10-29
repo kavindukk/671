@@ -1,7 +1,7 @@
 import numpy as np
 
 B = np.array([[1,2,4,1], [2,13,17,8], [4,17,29,16], [1,8,16,30]])
-
+C = np.array([[4,6,4,],[6,25,18],[4,18,22]])
 def calculate_chelesky(B:np.array):
     mIndex = B.shape[0]
     L = np.zeros((mIndex,mIndex))
@@ -16,6 +16,6 @@ def calculate_chelesky(B:np.array):
     return L
     
     
-L = calculate_chelesky(B)
+L = calculate_chelesky(C)
 print(L)
 
