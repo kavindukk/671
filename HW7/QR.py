@@ -1,6 +1,4 @@
 import numpy as np
-from numpy.core.defchararray import index
-
 def e(v, index, sign):
     base = np.zeros(len(v))
     base[index] = 1
