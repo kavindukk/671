@@ -3,7 +3,9 @@ import numpy as np
 class recursive_least_square:
     def __init__(self):
         self.P = np.diag(np.ones(3)*10**5)
-        self.currCoeffT = np.array([0., 0., 0.])
+        self.currCoeffT = np.array([[0., 0., 0.]])
+        self.kalmanGain = np.array([[0,0,0]])
+        self.QTranspose = np.array([[0,0,0]])
         self.Ts = 0.01
         self.steps = 100
         self.Y = np.zeros((self.steps))
@@ -40,14 +42,24 @@ class recursive_least_square:
         i = -self.yDot[step]
         j = -self.Y[step]
         k = self.input[step]
-        return np.array([[ i, j, k ]])
+        self.QTranspose =  np.array([[ i, j, k ]])
 
-    # def calculate_kalman_gain(self):
-    #     Q = np.array([self.QH]).T
-    #     k= self.P @ Q
-    #     scalar = Q.T @ self.P @ Q
-    #     k = k/(1+scalar[0,0])
-    #     self.kalmanGain = k
+    def calculate_kalman_gain(self, step):        
+        QT = self.QTranspose
+        Q = QT.T 
+        k= self.P @ Q
+        scalar = Q.T @ self.P @ Q
+        k = k/(1+scalar[0,0])
+        self.kalmanGain = k.T
+
+    def calculate_H(self, step):
+        h = self.currCoeffT
+        expectedY = self.QTranspose @ h.T 
+        expectedY = expectedY[0,0]
+        realY = self.Y[step]
+        nextCoeff = h + self.kalmanGain * (realY - expectedY)
+        self.Allcoeff = np.append(self.Allcoeff, h, axis=0)
+        self.currCoeffT = nextCoeff
 
     def calculate_values(self):
         for i in range(self.steps):
