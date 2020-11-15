@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.integrate import odeint
 
 class recursive_least_square:
     def __init__(self):
@@ -7,31 +8,26 @@ class recursive_least_square:
         self.kalmanGain = np.array([[0,0,0]])
         self.QTranspose = np.array([[0,0,0]])
         self.Ts = 0.01
-        self.steps = 100
-        self.Y = np.zeros((self.steps))
-        self.yDot = np.zeros((self.steps))
+        self.steps = 1000
+        self.y0 = [0,0]
+        self.t = [i*self.Ts for i in range(1,self.steps)]
+        self.solution = odeint(self.system, self.y0, self.t)  
         self.YDoubleDot = np.zeros((self.steps))
         self.input = np.zeros((self.steps))
         self.Allcoeff = np.array([[0,0,0]])
 
-        self.calculate_values()       
+        self.calculate_values()  
+        self.update_gains()
 
-    def calculate_Y(self, step):
-        if step >= 1:
-            t = step*self.Ts
-            f1 = -0.05143*np.exp(-2*t) + 0.13763*np.exp(t)
-            f2 = 1.5*np.sin(0.01*t) - 0.0075*np.cos(0.01*t) \
-                +1.5037*np.sin(0.1*t) - 0.0756*np.cos(0.1*t) \
-                -0.0303*np.sin(10*t) - 0.0031*np.cos(10*t)
-            self.Y[step] = f1 + f2
+    def system(self, x, t):
+        f, f_dot = x
+        s = np.sin
+        dydt = [f_dot, -f_dot-2*f + 3*(s(0.01*t) + s(0.1*t) + s(t) + s(10*t))]
+        return dydt  
 
-    def calculate_yDot(self, step):
-        if step >= 1:
-            self.yDot[step] = ( self.Y[step] - self.Y[step-1] )/self.Ts
-        
     def calculate_YDoubleDot(self,step):
         if step >=1:
-            self.YDoubleDot[step] = ( self.yDot[step] - self.yDot[step-1] )/self.Ts
+            self.YDoubleDot[step] = -self.solution[step-1,1] -2*self.solution[step-1,0] + 3*self.input[step]
 
     def calculate_input(self, step):
         t = self.Ts*step
@@ -39,9 +35,9 @@ class recursive_least_square:
         self.input[step] = u
 
     def calculate_QTranspose(self,step):
-        i = -self.yDot[step]
-        j = -self.Y[step]
-        k = self.input[step]
+        i = -self.solution[step-1,1]
+        j = -self.solution[step-1,0]
+        k = self.input[step-1]
         self.QTranspose =  np.array([[ i, j, k ]])
 
     def calculate_kalman_gain(self, step):        
@@ -52,11 +48,15 @@ class recursive_least_square:
         k = k/(1+scalar[0,0])
         self.kalmanGain = k.T
 
+    def update_P(self):
+        k = self.kalmanGain
+        self.P = self.P - k.T @ self.QTranspose @ self.P
+
     def calculate_H(self, step):
         h = self.currCoeffT
         expectedY = self.QTranspose @ h.T 
         expectedY = expectedY[0,0]
-        realY = self.Y[step]
+        realY = self.YDoubleDot[step]
         nextCoeff = h + self.kalmanGain * (realY - expectedY)
         self.Allcoeff = np.append(self.Allcoeff, h, axis=0)
         self.currCoeffT = nextCoeff
@@ -64,9 +64,24 @@ class recursive_least_square:
     def calculate_values(self):
         for i in range(self.steps):
             self.calculate_input(i)
-            self.calculate_Y(i)
-            self.calculate_yDot(i)
             self.calculate_YDoubleDot(i)
 
+    def update_gains(self):
+        for i in range(self.steps):
+            self.calculate_QTranspose(i)
+            self.calculate_kalman_gain(i)
+            self.update_P()
+            self.calculate_H(i)
+
+
+rls = recursive_least_square()
+
+# print(rls.Y)
+# print(rls.yDot)
+# print(rls.YDoubleDot)
+
+print(rls.Allcoeff)
+# print(rls.input)
+# print(rls.P)
 
     
