@@ -22,6 +22,7 @@ class recursive_least_square:
         self.calculate_values()  
         self.update_gains()
         self.calculate_batch_least_squares()
+        self.plotting_values()
 
     def system(self, x, t):
         f, f_dot = x
@@ -85,6 +86,25 @@ class recursive_least_square:
             self.calculate_kalman_gain(i)
             self.update_P()
             self.calculate_H(i)
+
+    def plotting_values(self): 
+        t = np.array(self.t)       
+        ar = self.Allcoeff[1:-1,0].T
+        br = self.Allcoeff[1:-1,1].T
+        cr = self.Allcoeff[1:-1,2].T
+
+        ab = np.array([self.batchH[0] for i in range(1, self.steps)])
+        bb = np.array([self.batchH[1] for i in range(1, self.steps)])
+        cb = np.array([self.batchH[2] for i in range(1, self.steps)])
+
+        plt.plot(t, ar)
+        plt.plot(t, br)
+        plt.plot(t, cr)
+        plt.plot(t, ab, linestyle='dashed')
+        plt.plot(t, bb, linestyle='dashed')
+        plt.plot(t, cb, linestyle='dashed')
+
+        plt.show()
 
 
 rls = recursive_least_square()
